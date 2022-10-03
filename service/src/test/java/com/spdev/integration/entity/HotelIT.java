@@ -1,135 +1,140 @@
 package com.spdev.integration.entity;
 
 import com.spdev.entity.Hotel;
-import com.spdev.integration.IntegrationTestBase;
+import com.spdev.entity.enums.Status;
 import com.spdev.integration.util.TestEntityUtil;
-import com.spdev.util.HibernateUtil;
-import lombok.extern.slf4j.Slf4j;
+import com.spdev.util.HibernateTestUtil;
+import org.hibernate.PropertyValueException;
 import org.hibernate.TransientObjectException;
-import org.hibernate.exception.ConstraintViolationException;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import static com.spdev.integration.util.TestEntityUtil.FIRST_VALID_HOTEL;
-import static com.spdev.integration.util.TestEntityUtil.INVALID_HOTEL;
-import static com.spdev.integration.util.TestEntityUtil.SECOND_VALID_HOTEL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@Slf4j
-@Tag("Testing mapping functionality of Hotel.class")
-class HotelIT extends IntegrationTestBase {
+public class HotelIT {
+
+    private static final Integer EXISTING_HOTEL_1 = 1;
+    private static final Integer NONEXISTENT_HOTEL_ID = 999_999;
 
     @Test
     void shouldSaveNewValidHotelInDb() {
-        try (var sessionFactory = HibernateUtil.buildSessionFactory();
+        try (var sessionFactory = HibernateTestUtil.buildSessionFactory();
              var session = sessionFactory.openSession()) {
-            var testTransaction = session.beginTransaction();
-            log.info("Test transaction in shouldSaveNewValidHotelInDb() was opened {}:", testTransaction);
+            session.beginTransaction();
 
-            log.info("Test valid Hotel entity is in a transient state {}:", TestEntityUtil.SECOND_VALID_HOTEL);
-            var expectedId = session.save(TestEntityUtil.SECOND_VALID_HOTEL);
+            var validUser = TestEntityUtil.getValidUser();
+            var validHotel = TestEntityUtil.getValidHotel();
 
-            assertThat(expectedId).isNotNull();
-            assertThat(TestEntityUtil.SECOND_VALID_HOTEL.getId()).isEqualTo(expectedId);
-            log.info("Test shouldSaveNewValidHotelInDb() is passed");
+            validHotel.setOwner(validUser);
+            session.save(validUser);
+            var actualHotel = session.save(validHotel);
+
+            assertThat(actualHotel).isNotNull();
+            assertThat(actualHotel).isEqualTo(EXISTING_HOTEL_1);
             session.getTransaction().commit();
         }
     }
 
     @Test
-    void shouldThrowSQLExceptionIfHotelInvalid() {
-        try (var sessionFactory = HibernateUtil.buildSessionFactory();
+    void shouldThrowExceptionDuringSaveIfHotelInvalid() {
+        try (var sessionFactory = HibernateTestUtil.buildSessionFactory();
              var session = sessionFactory.openSession()) {
-            var testTransaction = session.beginTransaction();
-            log.info("Test transaction was opened {}:", testTransaction);
+            session.beginTransaction();
 
-            var invalidHotel = INVALID_HOTEL;
-            log.info("Test invalid Hotel entity is in a transient state {}:", invalidHotel);
+            var invalidHotel = TestEntityUtil.getInvalidHotel();
 
-            assertThrows(ConstraintViolationException.class, () -> session.save(invalidHotel));
-            log.info("Test shouldThrowSQLExceptionIfHotelInvalid is passed");
+            assertThrows(PropertyValueException.class, () -> session.save(invalidHotel));
         }
     }
 
     @Test
-    void shouldGetExistingHotel() {
-        try (var sessionFactory = HibernateUtil.buildSessionFactory();
+    void shouldReturnNullIfHotelIsNotExist() {
+        try (var sessionFactory = HibernateTestUtil.buildSessionFactory();
              var session = sessionFactory.openSession()) {
-            var testTransaction = session.beginTransaction();
-            log.info("Test transaction was opened {}:", testTransaction);
+            session.beginTransaction();
 
-            var expectedHotel = session.get(Hotel.class, FIRST_VALID_HOTEL.getId());
+            var actualHotel = session.get(Hotel.class, NONEXISTENT_HOTEL_ID);
 
-            assertThat(expectedHotel).isNotNull();
-            assertThat(FIRST_VALID_HOTEL).isEqualTo(expectedHotel);
-            log.info("Test shouldGetExistingHotel() is passed");
-            session.getTransaction().commit();
-        }
-    }
-
-    @Test
-    void shouldGetNullIfHotelNotExisting() {
-        try (var sessionFactory = HibernateUtil.buildSessionFactory();
-             var session = sessionFactory.openSession()) {
-            var testTransaction = session.beginTransaction();
-            log.info("Test transaction was opened {}:", testTransaction);
-
-            var expectedHotel = session.get(Hotel.class, 10);
-
-            assertThat(expectedHotel).isNull();
-            log.info("Test shouldGetNullIfHotelNotExisting() is passed");
+            assertThat(actualHotel).isNull();
             session.getTransaction().commit();
         }
     }
 
     @Test
     void shouldUpdateExistingHotel() {
-        try (var sessionFactory = HibernateUtil.buildSessionFactory();
+        try (var sessionFactory = HibernateTestUtil.buildSessionFactory();
              var session = sessionFactory.openSession()) {
-            var testTransaction = session.beginTransaction();
-            log.info("Test transaction was opened {}:", testTransaction);
+            session.beginTransaction();
 
-            var expectedHotel = session.get(Hotel.class, FIRST_VALID_HOTEL.getId());
-            expectedHotel.setOwnerId(1);
-            expectedHotel.setName("NewName");
+            var validUser = TestEntityUtil.getValidUser();
+            var validHotel = TestEntityUtil.getValidHotel();
+
+            validHotel.setOwner(validUser);
+            session.save(validUser);
+            session.save(validHotel);
+            var expectedHotel = session.get(Hotel.class, EXISTING_HOTEL_1);
+            expectedHotel.setName("HotelNameAfterUpdate");
+            expectedHotel.setHotelStatus(Status.BLOCKED);
             session.update(expectedHotel);
-            var actualHotel = session.get(Hotel.class, FIRST_VALID_HOTEL.getId());
+            session.flush();
+            session.clear();
+            var actualHotel = session.get(Hotel.class, EXISTING_HOTEL_1);
 
-            assertThat(actualHotel).isNotNull();
-            assertThat(actualHotel).isEqualTo(expectedHotel);
-            log.info("Test shouldUpdateExistingHotel() is passed");
+            assertThat(actualHotel.getName()).isEqualTo("HotelNameAfterUpdate");
+            assertThat(actualHotel.getHotelStatus()).isEqualTo(Status.BLOCKED);
             session.getTransaction().commit();
         }
     }
 
     @Test
-    void shouldTrowExceptionWhileUpdateIfHotelNotExist() {
-        try (var sessionFactory = HibernateUtil.buildSessionFactory();
+    void shouldTrowExceptionDuringUpdateIfHotelNotExisting() {
+        try (var sessionFactory = HibernateTestUtil.buildSessionFactory();
              var session = sessionFactory.openSession()) {
-            var testTransaction = session.beginTransaction();
-            log.info("Test transaction was opened {}:", testTransaction);
+            session.beginTransaction();
 
             assertThrows(TransientObjectException.class, () -> session.update(new Hotel()));
-            log.info("Test shouldTrowExceptionWhileUpdateIfHotelNotExist() is passed");
             session.getTransaction().commit();
         }
     }
 
     @Test
     void shouldDeleteExistingHotel() {
-        try (var sessionFactory = HibernateUtil.buildSessionFactory();
+        try (var sessionFactory = HibernateTestUtil.buildSessionFactory();
              var session = sessionFactory.openSession()) {
-            var testTransaction = session.beginTransaction();
-            log.info("Test transaction was opened {}:", testTransaction);
+            session.beginTransaction();
 
-            var firstExpectedHotel = session.save(SECOND_VALID_HOTEL);
-            assertThat(firstExpectedHotel).isNotNull();
-            session.delete(SECOND_VALID_HOTEL);
-            var expectedHotel = session.get(Hotel.class, SECOND_VALID_HOTEL.getId());
+            var validUser = TestEntityUtil.getValidUser();
+            var validHotel = TestEntityUtil.getValidHotel();
+            session.save(validUser);
+            validHotel.setOwner(validUser);
+            var savedHotel = session.save(validHotel);
+            assertThat(savedHotel).isNotNull();
 
-            assertThat(expectedHotel).isNull();
-            log.info("Test shouldDeleteExistingHotel() is passed");
+            session.delete(validHotel);
+            session.flush();
+            session.clear();
+            var actualHotel = session.get(Hotel.class, EXISTING_HOTEL_1);
+
+            assertThat(actualHotel).isNull();
+            session.getTransaction().commit();
+        }
+    }
+
+    @Test
+    void shouldDeleteHotelIfDeleteUser() {
+        try (var sessionFactory = HibernateTestUtil.buildSessionFactory();
+             var session = sessionFactory.openSession()) {
+            session.beginTransaction();
+
+            var validUser = TestEntityUtil.getValidUser();
+            var validHotel = TestEntityUtil.getValidHotel();
+
+            validUser.addHotel(validHotel);
+            session.save(validUser);
+            session.delete(validUser);
+            var actualHotel = session.get(Hotel.class, EXISTING_HOTEL_1);
+
+            assertThat(actualHotel).isNull();
             session.getTransaction().commit();
         }
     }

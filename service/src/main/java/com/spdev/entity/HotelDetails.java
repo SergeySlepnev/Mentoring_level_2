@@ -1,6 +1,6 @@
 package com.spdev.entity;
 
-import com.spdev.entity.enums.Rating;
+import com.spdev.entity.enums.Star;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,7 +8,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -16,47 +15,47 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.OneToOne;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "description")
+@EqualsAndHashCode(of = {"owner", "name", "locality"})
 @Builder
 @Entity
-public class Review {
+public class HotelDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
+    @ToString.Exclude
+    @OneToOne
     private Hotel hotel;
 
-    @ManyToOne
-    private User user;
+    @Column(nullable = false, unique = true)
+    private String phoneNumber;
 
     @Column(nullable = false)
-    private LocalDateTime date;
+    private String locality;
 
     @Column(nullable = false)
+    private String area;
+
+    @Column(nullable = false)
+    private String street;
+
+    @Column(nullable = false)
+    private Integer numbersOfFloors;
+
     @Enumerated(EnumType.STRING)
-    private Rating rating;
+    private Star star;
 
     @Column(nullable = false)
     private String description;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL)
-    @ToString.Exclude
-    private List<ReviewContent> reviewContents = new ArrayList<>();
-
-    public void addReviewContent(ReviewContent reviewContent) {
-        reviewContents.add(reviewContent);
-        reviewContent.setReview(this);
+    public void setHotel(Hotel hotel) {
+        hotel.setHotelDetails(this);
+        this.hotel = hotel;
     }
 }

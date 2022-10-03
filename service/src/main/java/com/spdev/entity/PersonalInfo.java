@@ -16,6 +16,8 @@ import java.time.LocalDate;
 public class PersonalInfo {
 
     private String firstname;
+
     private String lastname;
+
     private LocalDate birthDate;
 }

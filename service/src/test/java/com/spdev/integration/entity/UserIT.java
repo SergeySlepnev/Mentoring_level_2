@@ -1,151 +1,114 @@
 package com.spdev.integration.entity;
 
-import com.spdev.entity.PersonalInfo;
 import com.spdev.entity.User;
-import com.spdev.entity.enums.Role;
 import com.spdev.entity.enums.Status;
-import com.spdev.integration.IntegrationTestBase;
 import com.spdev.integration.util.TestEntityUtil;
-import com.spdev.util.HibernateUtil;
-import lombok.extern.slf4j.Slf4j;
+import com.spdev.util.HibernateTestUtil;
+import org.hibernate.PropertyValueException;
 import org.hibernate.TransientObjectException;
-import org.hibernate.exception.ConstraintViolationException;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
-
-import static com.spdev.integration.util.TestEntityUtil.FIRST_VALID_USER;
-import static com.spdev.integration.util.TestEntityUtil.INVALID_USER;
-import static com.spdev.integration.util.TestEntityUtil.SECOND_VALID_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@Slf4j
-@Tag("Testing mapping functionality of User.class")
-class UserIT extends IntegrationTestBase {
+public class UserIT {
+
+    private static final Integer EXISTING_USER_1 = 1;
+    private static final Integer NONEXISTENT_USER_ID = 999_999;
 
     @Test
     void shouldSaveNewValidUserInDb() {
-        try (var sessionFactory = HibernateUtil.buildSessionFactory();
+        try (var sessionFactory = HibernateTestUtil.buildSessionFactory();
              var session = sessionFactory.openSession()) {
-            var testTransaction = session.beginTransaction();
-            log.info("Test transaction in shouldSaveNewValidUserInDb() was opened {}:", testTransaction);
+            session.beginTransaction();
 
-            log.info("Test valid user entity is in a transient state {}:", TestEntityUtil.SECOND_VALID_USER);
-            var expectedId = session.save(TestEntityUtil.SECOND_VALID_USER);
+            var validUser = TestEntityUtil.getValidUser();
 
-            assertThat(expectedId).isNotNull();
-            assertThat(TestEntityUtil.SECOND_VALID_USER.getId()).isEqualTo(expectedId);
-            log.info("Test shouldSaveNewValidUserInDb() is passed");
+            var actualUser = session.save(validUser);
+
+            assertThat(actualUser).isNotNull();
+            assertThat(actualUser).isEqualTo(EXISTING_USER_1);
             session.getTransaction().commit();
         }
     }
 
     @Test
-    void shouldThrowSQLExceptionIfUserInvalid() {
-        try (var sessionFactory = HibernateUtil.buildSessionFactory();
+    void shouldThrowExceptionDuringSaveIfUserInvalid() {
+        try (var sessionFactory = HibernateTestUtil.buildSessionFactory();
              var session = sessionFactory.openSession()) {
-            var testTransaction = session.beginTransaction();
-            log.info("Test transaction was opened {}:", testTransaction);
+            session.beginTransaction();
 
-            var invalidUser = INVALID_USER;
-            log.info("Test invalid user entity is in a transient state {}:", invalidUser);
+            var invalidUser = TestEntityUtil.getInvalidUser();
 
-            assertThrows(ConstraintViolationException.class, () -> session.save(invalidUser));
-            log.info("Test shouldThrowSQLExceptionIfUserInvalid is passed");
-            // если здесь вызывать session.getTransaction().commit(), то тест падает.
-            // Это из-за ConstraintViolationException?
+            assertThrows(PropertyValueException.class, () -> session.save(invalidUser));
         }
     }
 
     @Test
-    void shouldGetExistingUser() {
-        try (var sessionFactory = HibernateUtil.buildSessionFactory();
+    void shouldGetNullIfUserIsNotExist() {
+        try (var sessionFactory = HibernateTestUtil.buildSessionFactory();
              var session = sessionFactory.openSession()) {
-            var testTransaction = session.beginTransaction();
-            log.info("Test transaction was opened {}:", testTransaction);
+            session.beginTransaction();
 
-            var expectedUser = session.get(User.class, FIRST_VALID_USER.getId());
+            var actualUser = session.get(User.class, NONEXISTENT_USER_ID);
 
-            assertThat(expectedUser).isNotNull();
-            assertThat(FIRST_VALID_USER).isEqualTo(expectedUser);
-            log.info("Test shouldGetExistingUser() is passed");
-            session.getTransaction().commit();
-        }
-    }
-
-    @Test
-    void shouldGetNullIfUserNotExisting() {
-        try (var sessionFactory = HibernateUtil.buildSessionFactory();
-             var session = sessionFactory.openSession()) {
-            var testTransaction = session.beginTransaction();
-            log.info("Test transaction was opened {}:", testTransaction);
-
-            var expectedUser = session.get(User.class, 10);
-
-            assertThat(expectedUser).isNull();
-            log.info("Test shouldGetNullIfUserNotExisting() is passed");
+            assertThat(actualUser).isNull();
             session.getTransaction().commit();
         }
     }
 
     @Test
     void shouldUpdateExistingUser() {
-        try (var sessionFactory = HibernateUtil.buildSessionFactory();
+        try (var sessionFactory = HibernateTestUtil.buildSessionFactory();
              var session = sessionFactory.openSession()) {
-            var testTransaction = session.beginTransaction();
-            log.info("Test transaction was opened {}:", testTransaction);
+            session.beginTransaction();
 
-            var expectedUser = session.get(User.class, FIRST_VALID_USER.getId());
-            expectedUser.setRole(Role.ADMIN);
-            expectedUser.setEmail("EmailAfterUpdate@gmail.com");
-            expectedUser.setPassword("PasswordAfterUpdate");
-            expectedUser.setPersonalInfo(PersonalInfo.builder()
-                    .firstname("FirstNameAfterUpdate")
-                    .lastname("LastNameAfterUpdate")
-                    .birthDate(LocalDate.of(2000, 10, 20))
-                    .build());
-            expectedUser.setPhone("PhoneAfterUpdate");
-            expectedUser.setPhotoLink("PhotoAfterUpdate.jpg");
+            var validUser = TestEntityUtil.getValidUser();
+            session.save(validUser);
+            var expectedUser = session.get(User.class, EXISTING_USER_1);
+
+            expectedUser.setEmail("After_update@gmail.com");
+            expectedUser.setPassword("After_update_password");
             expectedUser.setUserStatus(Status.BLOCKED);
             session.update(expectedUser);
-            var actualUser = session.get(User.class, FIRST_VALID_USER.getId());
+            session.flush();
+            session.clear();
+            var actualUser = session.get(User.class, EXISTING_USER_1);
 
-            assertThat(actualUser).isNotNull();
-            assertThat(actualUser).isEqualTo(expectedUser);
-            log.info("Test shouldUpdateExistingUser() is passed");
+            assertThat(actualUser.getEmail()).isEqualTo("After_update@gmail.com");
+            assertThat(actualUser.getPassword()).isEqualTo("After_update_password");
+            assertThat(actualUser.getUserStatus()).isEqualTo(Status.BLOCKED);
             session.getTransaction().commit();
         }
     }
 
     @Test
-    void shouldTrowExceptionWhileUpdateIfUserNotExist() {
-        try (var sessionFactory = HibernateUtil.buildSessionFactory();
+    void shouldTrowExceptionDuringUpdateIfUserNotExisting() {
+        try (var sessionFactory = HibernateTestUtil.buildSessionFactory();
              var session = sessionFactory.openSession()) {
-            var testTransaction = session.beginTransaction();
-            log.info("Test transaction was opened {}:", testTransaction);
+            session.beginTransaction();
 
             assertThrows(TransientObjectException.class, () -> session.update(new User()));
-            log.info("Test shouldTrowExceptionWhileUpdateIfUserNotExist() is passed");
             session.getTransaction().commit();
         }
     }
 
     @Test
     void shouldDeleteExistingUser() {
-        try (var sessionFactory = HibernateUtil.buildSessionFactory();
+        try (var sessionFactory = HibernateTestUtil.buildSessionFactory();
              var session = sessionFactory.openSession()) {
-            var testTransaction = session.beginTransaction();
-            log.info("Test transaction was opened {}:", testTransaction);
+            session.beginTransaction();
 
-            var firstExpectedUser = session.save(SECOND_VALID_USER);
-            assertThat(firstExpectedUser).isNotNull();
-            session.delete(SECOND_VALID_USER);
-            var expectedUser = session.get(User.class, SECOND_VALID_USER.getId());
+            var validUser = TestEntityUtil.getValidUser();
+            var savedUser = session.save(validUser);
+            assertThat(savedUser).isNotNull();
 
-            assertThat(expectedUser).isNull();
-            log.info("Test shouldDeleteExistingUser() is passed");
+            session.delete(validUser);
+            session.flush();
+            session.clear();
+            var actualUser = session.get(User.class, EXISTING_USER_1);
+
+            assertThat(actualUser).isNull();
             session.getTransaction().commit();
         }
     }

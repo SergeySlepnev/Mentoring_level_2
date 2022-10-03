@@ -1,5 +1,8 @@
 package com.spdev.entity.enums;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 public enum Rating {
 
     ONE(1),
@@ -9,9 +12,4 @@ public enum Rating {
     FIVE(5);
 
     private final Integer rating;
-
-    Rating(Integer rating) {
-        this.rating = rating;
-    }
-
 }
