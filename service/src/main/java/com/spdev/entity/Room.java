@@ -13,6 +13,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -25,7 +26,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "roomNo")
+@EqualsAndHashCode(of = {"roomNo", "type", "square", "bedCount", "floor"})
+@ToString(exclude = {"hotel", "requests", "roomContents"})
 @Builder
 @Entity
 public class Room {
@@ -34,8 +36,7 @@ public class Room {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ToString.Exclude
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Hotel hotel;
 
     @Column(nullable = false)
@@ -46,11 +47,12 @@ public class Room {
 
     private Double square;
 
-    private Integer numberOfBed;
+    private Integer bedCount;
 
     private BigDecimal cost;
 
-    private Boolean available;
+    @Column(nullable = false)
+    private boolean available;
 
     private Integer floor;
 
@@ -58,18 +60,16 @@ public class Room {
 
     @Builder.Default
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
-    @ToString.Exclude
     private List<BookingRequest> requests = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+    private List<RoomContent> roomContents = new ArrayList<>();
 
     public void addRequest(BookingRequest request) {
         requests.add(request);
         request.setRoom(this);
     }
-
-    @Builder.Default
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
-    @ToString.Exclude
-    private List<RoomContent> roomContents = new ArrayList<>();
 
     public void addRoomContent(RoomContent roomContent) {
         roomContents.add(roomContent);

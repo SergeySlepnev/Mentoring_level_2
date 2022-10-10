@@ -1,5 +1,6 @@
 package com.spdev.entity;
 
+import com.spdev.entity.enums.ContentType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,6 +10,7 @@ import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,18 +20,20 @@ import javax.persistence.ManyToOne;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "link")
+@ToString(exclude = "review")
 @Builder
 @Entity
 public class ReviewContent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Integer id;
+    private Integer id;
 
-    @ToString.Exclude
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Review review;
 
     @Column(nullable = false)
     private String link;
+
+    private ContentType type;
 }

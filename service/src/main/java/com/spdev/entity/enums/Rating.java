@@ -1,8 +1,8 @@
 package com.spdev.entity.enums;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public enum Rating {
 
     ONE(1),

@@ -7,8 +7,10 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,6 +20,7 @@ import javax.persistence.ManyToOne;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "link")
+@ToString(exclude = "room")
 @Builder
 @Entity
 public class RoomContent {
@@ -26,10 +29,11 @@ public class RoomContent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ToString.Exclude
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Room room;
 
     @Column(nullable = false)
     private String link;
+
+    private CascadeType type;
 }

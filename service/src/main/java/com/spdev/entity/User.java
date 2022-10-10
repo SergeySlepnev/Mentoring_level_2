@@ -27,6 +27,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = {"email", "phone"})
+@ToString(exclude = {"hotels", "requests", "reviews"})
 @Builder
 @Entity
 @Table(name = "users")
@@ -55,32 +56,29 @@ public class User {
     private String photoLink;
 
     @Enumerated(EnumType.STRING)
-    private Status userStatus;
+    private Status status;
 
     @Builder.Default
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
-    @ToString.Exclude
     private List<Hotel> hotels = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<BookingRequest> requests = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Review> reviews = new ArrayList<>();
 
     public void addHotel(Hotel hotel) {
         hotels.add(hotel);
         hotel.setOwner(this);
     }
 
-    @Builder.Default
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @ToString.Exclude
-    private List<BookingRequest> requests = new ArrayList<>();
-
     public void addRequest(BookingRequest request) {
         requests.add(request);
         request.setUser(this);
     }
-
-    @Builder.Default
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @ToString.Exclude
-    private List<Review> reviews = new ArrayList<>();
 
     public void addReview(Review review) {
         reviews.add(review);

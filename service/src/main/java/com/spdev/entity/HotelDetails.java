@@ -12,6 +12,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -21,6 +22,7 @@ import javax.persistence.OneToOne;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = {"owner", "name", "locality"})
+@ToString(exclude = "hotel")
 @Builder
 @Entity
 public class HotelDetails {
@@ -29,12 +31,14 @@ public class HotelDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ToString.Exclude
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private Hotel hotel;
 
     @Column(nullable = false, unique = true)
     private String phoneNumber;
+
+    @Column(nullable = false)
+    private String country;
 
     @Column(nullable = false)
     private String locality;
@@ -46,7 +50,7 @@ public class HotelDetails {
     private String street;
 
     @Column(nullable = false)
-    private Integer numbersOfFloors;
+    private Integer floorCount;
 
     @Enumerated(EnumType.STRING)
     private Star star;

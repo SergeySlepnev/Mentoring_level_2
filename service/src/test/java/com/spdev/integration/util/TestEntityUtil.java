@@ -36,7 +36,7 @@ public class TestEntityUtil {
                         .build())
                 .phone("+7(359)-778-29-06")
                 .photoLink("randomPhoto.jpg")
-                .userStatus(Status.NEW)
+                .status(Status.NEW)
                 .build();
     }
 
@@ -53,7 +53,7 @@ public class TestEntityUtil {
                 .owner(getValidUser())
                 .name("HotelPlaza")
                 .available(true)
-                .hotelStatus(Status.APPROVED)
+                .status(Status.APPROVED)
                 .build();
     }
 
@@ -71,7 +71,7 @@ public class TestEntityUtil {
                 .locality("Locality")
                 .area("West")
                 .street("firstStreet")
-                .numbersOfFloors(3)
+                .floorCount(3)
                 .star(Star.TWO)
                 .description("Very good hotel")
                 .build();
@@ -90,7 +90,7 @@ public class TestEntityUtil {
                 .roomNo(2)
                 .type(RoomType.TRPL)
                 .square(25.4)
-                .numberOfBed(3)
+                .bedCount(3)
                 .cost(BigDecimal.valueOf(2500.25))
                 .available(true)
                 .floor(2)
@@ -113,7 +113,7 @@ public class TestEntityUtil {
                 .user(getValidUser())
                 .checkIn(LocalDate.of(2022, 9, 26))
                 .checkOut(LocalDate.of(2022, 9, 28))
-                .requestStatus(Status.APPROVED)
+                .status(Status.APPROVED)
                 .build();
     }
 
@@ -127,7 +127,7 @@ public class TestEntityUtil {
     public static Review getValidReview() {
         return Review.builder()
                 .hotel(getValidHotel())
-                .date(LocalDateTime.now())
+                .createdAt(LocalDateTime.now())
                 .rating(Rating.ONE)
                 .description("Very bad hotel!!!")
                 .build();

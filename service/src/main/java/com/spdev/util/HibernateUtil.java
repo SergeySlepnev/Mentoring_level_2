@@ -25,15 +25,17 @@ public class HibernateUtil {
     public static Configuration buildConfiguration() {
         var configuration = new Configuration();
         configuration.setPhysicalNamingStrategy(new CamelCaseToUnderscoresNamingStrategy());
-        configuration.addAnnotatedClass(User.class);
-        configuration.addAnnotatedClass(Hotel.class);
-        configuration.addAnnotatedClass(HotelContent.class);
-        configuration.addAnnotatedClass(HotelDetails.class);
-        configuration.addAnnotatedClass(Room.class);
-        configuration.addAnnotatedClass(RoomContent.class);
-        configuration.addAnnotatedClass(BookingRequest.class);
-        configuration.addAnnotatedClass(Review.class);
-        configuration.addAnnotatedClass(ReviewContent.class);
+        configuration
+                .addAnnotatedClass(User.class)
+                .addAnnotatedClass(Hotel.class)
+                .addAnnotatedClass(HotelContent.class)
+                .addAnnotatedClass(HotelDetails.class)
+                .addAnnotatedClass(Room.class)
+                .addAnnotatedClass(RoomContent.class)
+                .addAnnotatedClass(BookingRequest.class)
+                .addAnnotatedClass(Review.class)
+                .addAnnotatedClass(ReviewContent.class);
+
         return configuration;
     }
 }

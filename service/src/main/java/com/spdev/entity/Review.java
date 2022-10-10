@@ -11,8 +11,7 @@ import lombok.ToString;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -25,7 +24,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "description")
+@EqualsAndHashCode(of = {"hotel", "user", "date"})
+@ToString(exclude = "reviewContents")
 @Builder
 @Entity
 public class Review {
@@ -34,25 +34,22 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Hotel hotel;
 
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private User user;
 
     @Column(nullable = false)
-    private LocalDateTime date;
+    private LocalDateTime createdAt;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
     private Rating rating;
 
-    @Column(nullable = false)
     private String description;
 
     @Builder.Default
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL)
-    @ToString.Exclude
     private List<ReviewContent> reviewContents = new ArrayList<>();
 
     public void addReviewContent(ReviewContent reviewContent) {

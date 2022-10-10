@@ -12,6 +12,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -22,7 +23,8 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"hotel","room", "user"})
+@EqualsAndHashCode(exclude = {"hotel", "room", "user"})
+@ToString(exclude = {"hotel", "room", "user"})
 @Builder
 @Entity
 public class BookingRequest {
@@ -34,16 +36,13 @@ public class BookingRequest {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @ToString.Exclude
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Hotel hotel;
 
-    @ToString.Exclude
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Room room;
 
-    @ToString.Exclude
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private User user;
 
     @Column(nullable = false)
@@ -54,5 +53,5 @@ public class BookingRequest {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Status requestStatus;
+    private Status status;
 }
