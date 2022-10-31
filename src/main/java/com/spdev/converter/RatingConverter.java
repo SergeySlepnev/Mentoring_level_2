@@ -7,10 +7,13 @@ import javax.persistence.AttributeConverter;
 public class RatingConverter implements AttributeConverter<Rating, Integer> {
 
     private static final Integer DIFFERENCE = 1;
+    private static final Integer DEFAULT_RATING = 5;
 
     @Override
     public Integer convertToDatabaseColumn(Rating attribute) {
-        return attribute.ordinal() + DIFFERENCE;
+        return attribute != null
+                ? attribute.ordinal() + DIFFERENCE
+                : DEFAULT_RATING;
     }
 
     @Override
