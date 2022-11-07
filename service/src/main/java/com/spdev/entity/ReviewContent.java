@@ -8,8 +8,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,10 +21,10 @@ import javax.persistence.ManyToOne;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "link")
-@ToString(exclude = "review")
+@ToString(exclude = {"id", "review"})
 @Builder
 @Entity
-public class ReviewContent {
+public class ReviewContent implements BaseEntity<Integer> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,8 +33,8 @@ public class ReviewContent {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Review review;
 
-    @Column(nullable = false)
     private String link;
 
+    @Enumerated(EnumType.STRING)
     private ContentType type;
 }

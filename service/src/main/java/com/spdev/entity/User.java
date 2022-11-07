@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -20,6 +19,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,36 +28,34 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = {"email", "phone"})
-@ToString(exclude = {"hotels", "requests", "reviews"})
+@ToString(exclude = {"id", "hotels", "requests", "reviews"})
 @Builder
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements BaseEntity<Integer>, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Role role;
 
-    @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
     private String password;
 
     @Embedded
     private PersonalInfo personalInfo;
 
-    @Column(nullable = false, unique = true)
     private String phone;
 
     private String photoLink;
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    private LocalDateTime registeredAt;
 
     @Builder.Default
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)

@@ -8,8 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,10 +21,10 @@ import javax.persistence.ManyToOne;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "link")
-@ToString(exclude = "room")
+@ToString(exclude = {"id", "room"})
 @Builder
 @Entity
-public class RoomContent {
+public class RoomContent implements BaseEntity<Integer> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,8 +33,8 @@ public class RoomContent {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Room room;
 
-    @Column(nullable = false)
     private String link;
 
+    @Enumerated(EnumType.STRING)
     private CascadeType type;
 }

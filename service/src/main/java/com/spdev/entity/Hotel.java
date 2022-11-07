@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -27,18 +26,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 @NamedEntityGraph(
-        name = "withHotelContent",
+        name = "Hotel.hotelContents",
         attributeNodes = {
                 @NamedAttributeNode("hotelContents")
+        })
+@NamedEntityGraph(
+        name = "Hotel.hotelDetails",
+        attributeNodes = {
+                @NamedAttributeNode("hotelDetails")
         })
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = {"owner", "name"})
-@ToString(exclude = {"rooms", "requests", "reviews", "hotelContents", "hotelDetails"})
+@ToString(of = {"owner", "name", "status"})
 @Builder
 @Entity
-public class Hotel {
+public class Hotel implements BaseEntity<Integer> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,13 +52,10 @@ public class Hotel {
     @JoinColumn(name = "owner_id")
     private User owner;
 
-    @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
     private boolean available;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
 

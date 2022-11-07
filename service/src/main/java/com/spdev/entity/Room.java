@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -18,19 +17,26 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToMany;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+@NamedEntityGraph(
+        name = "Room.roomContents",
+        attributeNodes = {
+                @NamedAttributeNode("roomContents")
+        })
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = {"roomNo", "type", "square", "bedCount", "floor"})
-@ToString(exclude = {"hotel", "requests", "roomContents"})
+@ToString(exclude = {"id", "hotel", "requests", "roomContents"})
 @Builder
 @Entity
-public class Room {
+public class Room implements BaseEntity<Integer> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +45,6 @@ public class Room {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Hotel hotel;
 
-    @Column(nullable = false)
     private Integer roomNo;
 
     @Enumerated(EnumType.STRING)
@@ -47,11 +52,12 @@ public class Room {
 
     private Double square;
 
-    private Integer bedCount;
+    private Integer adultBedCount;
+
+    private Integer childrenBedCount;
 
     private BigDecimal cost;
 
-    @Column(nullable = false)
     private boolean available;
 
     private Integer floor;

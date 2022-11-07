@@ -23,17 +23,17 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"hotel", "room", "user"})
-@ToString(exclude = {"hotel", "room", "user"})
+@EqualsAndHashCode(exclude = {"id", "hotel", "room", "user"})
+@ToString(exclude = {"id", "hotel", "room", "user"})
 @Builder
 @Entity
-public class BookingRequest {
+public class BookingRequest implements BaseEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
     @Column(nullable = false)
+    private Long id;
+
     private LocalDateTime createdAt;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -45,13 +45,10 @@ public class BookingRequest {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private User user;
 
-    @Column(nullable = false)
     private LocalDate checkIn;
 
-    @Column(nullable = false)
     private LocalDate checkOut;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
 }

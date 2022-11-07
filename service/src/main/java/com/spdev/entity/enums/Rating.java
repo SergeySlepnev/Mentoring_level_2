@@ -11,5 +11,5 @@ public enum Rating {
     FOUR(4),
     FIVE(5);
 
-    private final Integer rating;
+    public final Integer rating;
 }
