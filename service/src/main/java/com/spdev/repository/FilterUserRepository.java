@@ -1,12 +1,11 @@
 package com.spdev.repository;
 
-import com.spdev.dto.UserFilter;
 import com.spdev.entity.User;
-import org.springframework.data.domain.Page;
+import com.spdev.filter.UserFilter;
+
+import java.util.List;
 
 public interface FilterUserRepository {
 
-    Page<User> findAllByFilter(UserFilter filter, Integer pageSize);
-
-    void update(User user);
+    List<User> findAllByFilter(UserFilter filter);
 }

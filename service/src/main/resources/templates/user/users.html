@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Users</title>
+</head>
+<body>
+<form action="/users">
+    <div>
+        <select name="role">
+            <option th:each="role : ${roles}"
+                    th:text="${role.name()}" th:value="${filter.role()}">Roles
+            </option>
+        </select>
+    </div>
+    <label for="firstName">First name
+        <input id="firstName" type="text" name="firstName" th:value="${filter.firstName()}">
+    </label><br>
+    <label for="lastName">Last name
+        <input id="lastName" type="text" name="lastName" th:value="${filter.lastName()}">
+    </label><br>
+    <div>
+        <select name="status">
+            <option th:each="status : ${statuses}"
+                    th:text="${status.name()}" th:value="${filter.status()}">Roles
+            </option>
+        </select>
+    </div>
+    <div>
+        <label for="page">Page:
+            <input id="page" type="number" name="page" th:value="${users.metadata.page}">
+        </label>
+        <label for="size">Size:
+            <input id="size" type="number" name="size" th:value="${users.metadata.size}">
+        </label>
+    </div>
+    <button type="submit">Filter</button>
+</form>
+<div th:each="user : ${users.content}">
+    <a th:href="@{'/users/' + ${user.id}}" th:text="|${user.firstName} ${user.lastName}|"></a>
+</div>
+</body>
+</html>

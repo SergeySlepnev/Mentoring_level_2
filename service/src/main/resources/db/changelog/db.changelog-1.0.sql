@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS users
     password      VARCHAR(64)  NOT NULL,
     firstname     VARCHAR(128) NOT NULL,
     lastname      VARCHAR(128) NOT NULL,
-    birth_date    DATE         NOT NULL,
+    birth_date    DATE,
     phone         VARCHAR(32)  NOT NULL UNIQUE,
     photo_link    VARCHAR(1024),
     status        VARCHAR(32)  NOT NULL,
