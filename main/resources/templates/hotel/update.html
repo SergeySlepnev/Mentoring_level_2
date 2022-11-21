@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Adding hotel</title>
+</head>
+<body>
+<form th:action="@{/hotels/{hotelId}/update(hotelId=${hotelId})}" enctype="multipart/form-data" method="post"
+      th:object="${hotel}">
+
+    <!--    For HotelCreateEditDTO-->
+    <input id="ownerId" type="hidden" name="ownerId" th:value="${userId}">
+    <label for="name">Name:
+        <input id="name" type="text" name="name" th:value="${hotel.name}">
+    </label><br>
+    <div th:if="${hotelErrors}">
+        <p style="color: red" th:each="error : ${hotelErrors}" th:text="${error.defaultMessage}">Error message</p>
+    </div>
+
+    <!--For HotelDetailsCreateEditDTO-->
+    <label for="phoneNumber">Phone:
+        <input id="phoneNumber" type="text" name="phoneNumber" th:value="${hotelDetails.phoneNumber}">
+    </label><br>
+    <label for="country">Country:
+        <input id="country" type="text" name="country" th:value="${hotelDetails.country}">
+    </label><br>
+    <label for="locality">Locality:
+        <input id="locality" type="text" name="locality" th:value="${hotelDetails.locality}">
+    </label><br>
+    <label for="area">Area:
+        <input id="area" type="text" name="area" th:value="${hotelDetails.area}">
+    </label><br>
+    <label for="street">Street:
+        <input id="street" type="text" name="street" th:value="${hotelDetails.street}">
+    </label><br>
+    <label for="floorCount">Floors:
+        <input id="floorCount" type="number" name="floorCount" th:value="${hotelDetails.floorCount}">
+    </label><br>
+    Star:<br>
+    <div th:each="star : ${stars}">
+        <input th:id="${star}" type="radio" name="star" th:value="${star}" th:checked="${star == hotelDetails.star}">
+        <label th:for="${star}" th:text="${star}">Star</label>
+    </div>
+    <label for="description">Description:
+        <input id="description" type="text" name="description" th:value="${hotelDetails.description}">
+    </label><br>
+    <div th:if="${hotelDetailsErrors}">
+        <p style="color: red" th:each="error : ${hotelDetailsErrors}" th:text="${error.defaultMessage}">Error
+            message</p>
+    </div>
+
+    <!--    For HotelContentCreateDTO-->
+    <label for="content">Content
+        <input id="content" type="file" name="link">
+    </label><br>
+    Content type:<br>
+    <div th:each="contentType : ${contentTypes}">
+        <input th:id="${contentType}" type="radio" name="contentType" th:value="${contentType}"
+               th:checked="${contentType == hotelContent.contentType}">
+        <label th:for="${contentType}" th:text="${contentType}">Content type</label>
+    </div>
+
+    <button type="submit">Apply changes</button>
+</form>
+</body>
+</html>

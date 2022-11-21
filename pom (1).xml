@@ -23,51 +23,28 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <junit5.version>5.9.0</junit5.version>
-        <lombok.version>1.18.24</lombok.version>
-        <slf4f.version>2.0.2</slf4f.version>
-        <hibernate.version>5.6.12.Final</hibernate.version>
-        <spring.version>5.3.23</spring.version>
-        <spring.boot.version>2.7.5</spring.boot.version>
-        <querydsl.version>5.0.0</querydsl.version>
         <hibernate.jpamodelgen.version>5.6.12.Final</hibernate.jpamodelgen.version>
         <javax.persistence-api>2.2</javax.persistence-api>
+        <springdoc.version>1.6.12</springdoc.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
 
             <dependency>
-                <groupId>com.querydsl</groupId>
-                <artifactId>querydsl-apt</artifactId>
-                <version>${querydsl.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.querydsl</groupId>
-                <artifactId>querydsl-jpa</artifactId>
-                <version>${querydsl.version}</version>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-ui</artifactId>
+                <version>${springdoc.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>${lombok.version}</version>
-                <scope>provided</scope>
-            </dependency>
             <dependency>
                 <groupId>org.testcontainers</groupId>
                 <artifactId>postgresql</artifactId>
-                <version>1.17.3</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.postgresql</groupId>
-                <artifactId>postgresql</artifactId>
-                <version>42.5.0</version>
-                <scope>runtime</scope>
+                <version>1.17.5</version>
+                <scope>test</scope>
             </dependency>
 
         </dependencies>
@@ -221,7 +198,6 @@
                     </executions>
                     <configuration>
                         <excludes>
-                            <exclude>com.spdev.config/*</exclude>
                             <exclude>com.spdev.entity/*</exclude>
                             <exclude>com.spdev.query/*</exclude>
                         </excludes>

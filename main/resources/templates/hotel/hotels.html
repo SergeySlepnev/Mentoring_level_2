@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hotels</title>
+</head>
+<body>
+<form action="/hotels">
+    <label for="country">Country
+        <input id="country" type="text" name="country" th:value="${filter.country()}">
+    </label><br>
+    <label for="locality">Locality
+        <input id="locality" type="text" name="locality" th:value="${filter.locality()}">
+    </label><br>
+    Star:<br>
+    <div th:each="star : ${stars}">
+        <input th:id="${star}" type="radio" name="star" th:value="${star}" th:checked="${star == filter.star()}">
+        <label th:for="${star}" th:text="${star}">Star</label>
+    </div>
+    <div>
+        <label for="page">Page:
+            <input id="page" type="number" name="page" th:value="${hotels.metadata.page}">
+        </label>
+        <label for="size">Size:
+            <input id="size" type="number" name="size" th:value="${hotels.metadata.size}">
+        </label>
+    </div>
+    <p>
+        <button type="submit">Filter</button>
+    </p>
+</form>
+<div th:each="hotel : ${hotels.content}">
+    <a th:href="@{'/hotels/' + ${hotel.id}}" th:text="|${hotel.name}|"></a>
+</div>
+</body>
+</html>
