@@ -1,7 +1,7 @@
 package com.spdev.http.controller;
 
 import com.spdev.dto.PageResponse;
-import com.spdev.dto.UserCreateEditDTO;
+import com.spdev.dto.UserCreateEditDto;
 import com.spdev.entity.enums.Role;
 import com.spdev.entity.enums.Status;
 import com.spdev.filter.UserFilter;
@@ -9,6 +9,10 @@ import com.spdev.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -39,7 +43,10 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public String findById(@PathVariable("id") Integer id, Model model) {
+    public String findById(@PathVariable("id") Integer id,
+                           Model model,
+                           @CurrentSecurityContext SecurityContext securityContext,
+                           @AuthenticationPrincipal UserDetails userDetails) {
         return userService.findById(id)
                 .map(user -> {
                     model.addAttribute("user", user);
@@ -50,14 +57,14 @@ public class UserController {
     }
 
     @GetMapping("/registration")
-    public String registration(Model model, @ModelAttribute("user") UserCreateEditDTO user) {
+    public String registration(Model model, @ModelAttribute("user") UserCreateEditDto user) {
         model.addAttribute("user", user);
         model.addAttribute("roles", Role.values());
         return "user/registration";
     }
 
     @PostMapping
-    public String create(@ModelAttribute("user") @Validated UserCreateEditDTO user,
+    public String create(@ModelAttribute("user") @Validated UserCreateEditDto user,
                          BindingResult bindingResult,
                          RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
@@ -65,11 +72,12 @@ public class UserController {
             redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
             return "redirect:/users/registration";
         }
-        return "redirect:/users/" + userService.create(user).getId();
+        userService.create(user);
+        return "redirect:/login";
     }
 
     @PostMapping("/{id}/update")
-    public String update(@PathVariable("id") Integer id, @ModelAttribute("user") UserCreateEditDTO user) {
+    public String update(@PathVariable("id") Integer id, @ModelAttribute("user") UserCreateEditDto user) {
         return userService.update(id, user)
                 .map(it -> "redirect:/users/{id}")
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));

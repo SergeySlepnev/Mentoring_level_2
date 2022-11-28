@@ -1,7 +1,7 @@
 package com.spdev.service;
 
-import com.spdev.dto.HotelContentCreateDTO;
-import com.spdev.dto.HotelContentReadDTO;
+import com.spdev.dto.HotelContentCreateDto;
+import com.spdev.dto.HotelContentReadDto;
 import com.spdev.entity.HotelContent;
 import com.spdev.mapper.HotelContentCreateMapper;
 import com.spdev.mapper.HotelContentReadMapper;
@@ -25,13 +25,13 @@ public class HotelContentService {
     private final HotelContentCreateMapper hotelContentCreateMapper;
     private final HotelContentReadMapper hotelContentReadMapper;
 
-    public Optional<HotelContentReadDTO> findByHotelId(Integer id) {
-        return hotelContentRepository.findBy(id)
+    public Optional<HotelContentReadDto> findByHotelId(Integer id) {
+        return hotelContentRepository.findByHotelId(id)
                 .map(hotelContentReadMapper::map);
     }
 
     @Transactional
-    public HotelContentReadDTO create(HotelContentCreateDTO createDTO) {
+    public HotelContentReadDto create(HotelContentCreateDto createDTO) {
         return Optional.of(createDTO)
                 .map(entity -> {
                     uploadImage(createDTO.getLink());
@@ -43,7 +43,7 @@ public class HotelContentService {
     }
 
     public Optional<byte[]> findContent(Integer id) {
-        return hotelContentRepository.findBy(id)
+        return hotelContentRepository.findByHotelId(id)
                 .map(HotelContent::getLink)
                 .filter(StringUtils::hasText)
                 .flatMap(imageService::get);

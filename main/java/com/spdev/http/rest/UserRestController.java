@@ -1,8 +1,8 @@
 package com.spdev.http.rest;
 
 import com.spdev.dto.PageResponse;
-import com.spdev.dto.UserCreateEditDTO;
-import com.spdev.dto.UserReadDTO;
+import com.spdev.dto.UserCreateEditDto;
+import com.spdev.dto.UserReadDto;
 import com.spdev.filter.UserFilter;
 import com.spdev.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -33,13 +33,13 @@ public class UserRestController {
     private final UserService userService;
 
     @GetMapping
-    public PageResponse<UserReadDTO> findAll(UserFilter filter, Pageable pageable) {
+    public PageResponse<UserReadDto> findAll(UserFilter filter, Pageable pageable) {
         var page = userService.findAll(filter, pageable);
         return PageResponse.of(page);
     }
 
     @GetMapping("/{id}")
-    public UserReadDTO findById(@PathVariable("id") Integer id) {
+    public UserReadDto findById(@PathVariable("id") Integer id) {
         return userService.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
@@ -52,12 +52,12 @@ public class UserRestController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserReadDTO create(@Validated @RequestBody UserCreateEditDTO user) {
+    public UserReadDto create(@Validated @RequestBody UserCreateEditDto user) {
         return userService.create(user);
     }
 
     @PutMapping("/{id}")
-    public UserReadDTO update(@PathVariable("id") Integer id, @RequestBody UserCreateEditDTO user) {
+    public UserReadDto update(@PathVariable("id") Integer id, @RequestBody UserCreateEditDto user) {
         return userService.update(id, user)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }

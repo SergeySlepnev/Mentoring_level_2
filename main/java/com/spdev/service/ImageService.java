@@ -16,6 +16,7 @@ import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 @RequiredArgsConstructor
 public class ImageService {
 
+    //здесь с property не разобрался ещё, не работает ни в какую)
     private final String bucket = "C:\\Users\\LENOVO\\IdeaProjects\\Level_2\\dmdev-project-level-2\\images";
 
     @SneakyThrows

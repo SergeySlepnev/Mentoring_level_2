@@ -1,7 +1,7 @@
 package com.spdev.service;
 
-import com.spdev.dto.HotelDetailsCreateEditDTO;
-import com.spdev.dto.HotelDetailsReadDTO;
+import com.spdev.dto.HotelDetailsCreateEditDto;
+import com.spdev.dto.HotelDetailsReadDto;
 import com.spdev.mapper.HotelDetailsCreateEditMapper;
 import com.spdev.mapper.HotelDetailsReadMapper;
 import com.spdev.repository.HotelDetailsRepository;
@@ -20,13 +20,13 @@ public class HotelDetailsService {
     private final HotelDetailsCreateEditMapper hotelDetailsCreateEditMapper;
     private final HotelDetailsReadMapper hotelDetailsReadMapper;
 
-    public Optional<HotelDetailsReadDTO> findByHotelId(Integer hotelId) {
-        return hotelDetailsRepository.findBy(hotelId)
+    public Optional<HotelDetailsReadDto> findByHotelId(Integer hotelId) {
+        return hotelDetailsRepository.findByHotelId(hotelId)
                 .map(hotelDetailsReadMapper::map);
     }
 
     @Transactional
-    public HotelDetailsReadDTO create(HotelDetailsCreateEditDTO createDTO) {
+    public HotelDetailsReadDto create(HotelDetailsCreateEditDto createDTO) {
         return Optional.of(createDTO)
                 .map(hotelDetailsCreateEditMapper::map)
                 .map(hotelDetailsRepository::save)
@@ -35,8 +35,8 @@ public class HotelDetailsService {
     }
 
     @Transactional
-    public Optional<HotelDetailsReadDTO> update(Integer id, HotelDetailsCreateEditDTO userDto) {
-        return hotelDetailsRepository.findBy(id)
+    public Optional<HotelDetailsReadDto> update(Integer id, HotelDetailsCreateEditDto userDto) {
+        return hotelDetailsRepository.findByHotelId(id)
                 .map(entity -> hotelDetailsCreateEditMapper.map(userDto, entity))
                 .map(hotelDetailsRepository::saveAndFlush)
                 .map(hotelDetailsReadMapper::map);

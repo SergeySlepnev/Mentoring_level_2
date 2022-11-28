@@ -5,13 +5,13 @@ CREATE TABLE IF NOT EXISTS users
 (
     id            SERIAL PRIMARY KEY,
     role          VARCHAR(64)  NOT NULL,
-    email         VARCHAR(128) NOT NULL UNIQUE,
-    password      VARCHAR(64)  NOT NULL,
+    username      VARCHAR(128) NOT NULL UNIQUE,
+    password      VARCHAR(128) NOT NULL,
     firstname     VARCHAR(128) NOT NULL,
     lastname      VARCHAR(128) NOT NULL,
     birth_date    DATE,
     phone         VARCHAR(32)  NOT NULL UNIQUE,
-    image    VARCHAR(1024),
+    image         VARCHAR(1024),
     status        VARCHAR(32)  NOT NULL,
     registered_at TIMESTAMP    NOT NULL
 );

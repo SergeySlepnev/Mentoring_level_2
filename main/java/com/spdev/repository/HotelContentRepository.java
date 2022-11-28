@@ -12,5 +12,5 @@ public interface HotelContentRepository extends
         QuerydslPredicateExecutor<HotelContent> {
 
     @Query("select hc from HotelContent hc where hc.hotel.id = :hotelId ")
-    Optional<HotelContent> findBy(Integer hotelId);
+    Optional<HotelContent> findByHotelId(Integer hotelId);
 }

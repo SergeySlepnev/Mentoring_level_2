@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Start page</title>
+</head>
+<body>
+<!--<div th:insert="~{fragment :: header}"></div>-->
+<form action="/MyBooking">
+    <h1>Top five hotels</h1>
+    <div th:each="hotel : ${topFiveHotels}">
+        <h4>
+            <span th:text="|${hotel.name} ${hotel.star()} ${hotel.avgRating()}|">Hotel info</span>
+            <span th:text="|${hotel.name} ${hotel.star()} ${hotel.avgRating()}|">Hotel info</span>
+            <!--            <div th:if="${hotel.link}">-->
+            <img th:src="@{/hotels/{hotelId}/content(hotelId=${hotel.id})}" alt="Hotel content">
+            <!--            </div>-->
+        </h4>
+    </div>
+</form>
+</body>
+</html>

@@ -1,7 +1,7 @@
 package com.spdev.service;
 
-import com.spdev.dto.UserCreateEditDTO;
-import com.spdev.dto.UserReadDTO;
+import com.spdev.dto.UserCreateEditDto;
+import com.spdev.dto.UserReadDto;
 import com.spdev.entity.User;
 import com.spdev.filter.UserFilter;
 import com.spdev.mapper.UserCreateEditMapper;
@@ -12,11 +12,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,14 +30,14 @@ import static com.spdev.entity.QUser.user;
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final UserReadMapper userReadMapper;
     private final UserCreateEditMapper userCreateEditMapper;
     private final ImageService imageService;
 
-    public Page<UserReadDTO> findAll(UserFilter filter, Pageable pageable) {
+    public Page<UserReadDto> findAll(UserFilter filter, Pageable pageable) {
         var predicate = QPredicates.builder()
                 .add(filter.role(), user.role::eq)
                 .add(filter.firstName(), user.personalInfo.firstname::containsIgnoreCase)
@@ -44,19 +49,20 @@ public class UserService {
                 .map(userReadMapper::map);
     }
 
-    public List<UserReadDTO> findAll() {
+    public List<UserReadDto> findAll() {
         return userRepository.findAll().stream()
                 .map(userReadMapper::map)
                 .toList();
     }
 
-    public Optional<UserReadDTO> findById(Integer id) {
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public Optional<UserReadDto> findById(Integer id) {
         return userRepository.findById(id)
                 .map(userReadMapper::map);
     }
 
     @Transactional
-    public UserReadDTO create(UserCreateEditDTO userDTO) {
+    public UserReadDto create(UserCreateEditDto userDTO) {
         return Optional.of(userDTO)
                 .map(dto -> {
                     uploadImage(dto.getImage());
@@ -68,7 +74,7 @@ public class UserService {
     }
 
     @Transactional
-    public Optional<UserReadDTO> update(Integer id, UserCreateEditDTO userDto) {
+    public Optional<UserReadDto> update(Integer id, UserCreateEditDto userDto) {
         return userRepository.findById(id)
                 .map(entity -> {
                     uploadImage(userDto.getImage());
@@ -94,6 +100,17 @@ public class UserService {
                 .map(User::getImage)
                 .filter(StringUtils::hasText)
                 .flatMap(imageService::get);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByUsername(username)
+                .map(user -> new org.springframework.security.core.userdetails.User(
+                        user.getUsername(),
+                        user.getPassword(),
+                        Collections.singleton(user.getRole())
+                ))
+                .orElseThrow(() -> new UsernameNotFoundException("Failed to retrieve user:" + username));
     }
 
     @SneakyThrows

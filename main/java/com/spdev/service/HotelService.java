@@ -1,7 +1,7 @@
 package com.spdev.service;
 
-import com.spdev.dto.HotelCreateEditDTO;
-import com.spdev.dto.HotelReadDTO;
+import com.spdev.dto.HotelCreateEditDto;
+import com.spdev.dto.HotelReadDto;
 import com.spdev.filter.HotelFilter;
 import com.spdev.mapper.HotelCreateEditMapper;
 import com.spdev.mapper.HotelReadMapper;
@@ -26,7 +26,7 @@ public class HotelService {
     private final HotelReadMapper hotelReadMapper;
     private final HotelCreateEditMapper hotelCreateEditMapper;
 
-    public Page<HotelReadDTO> findAll(HotelFilter filter, Pageable pageable) {
+    public Page<HotelReadDto> findAll(HotelFilter filter, Pageable pageable) {
         var predicate = QPredicates.builder()
                 .add(filter.country(), hotel.hotelDetails.country::containsIgnoreCase)
                 .add(filter.locality(), hotel.hotelDetails.locality::containsIgnoreCase)
@@ -37,13 +37,13 @@ public class HotelService {
                 .map(hotelReadMapper::map);
     }
 
-    public Optional<HotelReadDTO> findById(Integer id) {
+    public Optional<HotelReadDto> findById(Integer id) {
         return hotelRepository.findById(id)
                 .map(hotelReadMapper::map);
     }
 
     @Transactional
-    public HotelReadDTO create(HotelCreateEditDTO hotelDTO) {
+    public HotelReadDto create(HotelCreateEditDto hotelDTO) {
         return Optional.of(hotelDTO)
                 .map(hotelCreateEditMapper::map)
                 .map(hotelRepository::save)
@@ -52,7 +52,7 @@ public class HotelService {
     }
 
     @Transactional
-    public Optional<HotelReadDTO> update(Integer id, HotelCreateEditDTO hotelDTO) {
+    public Optional<HotelReadDto> update(Integer id, HotelCreateEditDto hotelDTO) {
         return hotelRepository.findById(id)
                 .map(entity -> hotelCreateEditMapper.map(hotelDTO, entity))
                 .map(hotelRepository::saveAndFlush)
