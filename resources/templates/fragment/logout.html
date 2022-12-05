@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Logout</title>
+</head>
+<body>
+<div th:fragment="logout">
+    <div th:if="${#authentication.principal != 'anonymousUser'}">
+        <span th:text="${#authentication.principal.username}">Username</span>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" th:text="#{logout}">Logout</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

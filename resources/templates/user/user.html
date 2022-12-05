@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User</title>
+</head>
+<body>
+<div th:insert="~{fragment/header}"></div>
+<form th:action="@{/users/{userId}/update(userId=${user.id})}" enctype="multipart/form-data" method="post"
+      th:object="${user}">
+    <label for="firstName">First name:
+        <input id="firstName" type="text" name="firstName" th:value="*{firstName}">
+    </label><br>
+    <label for="lastName">Last name
+        <input id="lastName" type="text" name="lastName" th:value="*{lastName}">
+    </label><br>
+    <label for="phone">Phone
+        <input id="phone" type="text" name="phone" th:value="*{phone}">
+    </label><br>
+    <label for="email">Email
+        <input id="email" type="email" name="email" th:value="*{email}">
+    </label><br>
+    <label for="birthDate">Date of birth
+        <input id="birthDate" type="date" name="birtDate" th:value="*{birthdate}">
+    </label><br>
+    <label for="password">Password
+        <input id="password" type="password" name="password" th:value="*{password}">
+    </label><br>
+    <div th:if="${user.image}">
+        <img th:src="@{/api/v1/users/{userId}/avatar(userId=${user.id})}" alt="User image">
+    </div>
+    <label for="image">Avatar
+        <input id="image" type="file" name="image">
+    </label><br>
+    <div th:each="role : ${roles}">
+        <input th:id="${role}" type="radio" name="role" th:value="${role}" th:checked="${role == user.role}">
+        <label th:for="${role}" th:text="${role}">Role name</label>
+    </div>
+    <button type="submit">Update</button>
+</form>
+
+<form th:action="@{/users/{userId}/delete(userId=${user.id})}" th:if="${user.role.name() == 'ADMIN'}" method="post"
+      th:object="${user}">
+    <button type="submit">Remove</button>
+</form>
+
+<form th:action="@{/users/{userId}/add_hotel/(userId=${user.id})}" th:if="${user.role.name() == 'OWNER'}" method="post"
+      th:object="${user}">
+    <button type="submit">Add hotel</button>
+</form>
+</body>
+</html>

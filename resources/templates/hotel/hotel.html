@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Hotel</title>
+</head>
+<body>
+<div th:include="~{fragment/header}"></div>
+<form th:action="@{/hotels/{hotelId}(hotelId=${hotel.id})}" enctype="multipart/form-data"
+      th:object="${hotel}">
+
+    <h4 th:text="|#{hotel.name}: ${hotel.name}|">Hotel name</h4>
+    <h4 th:text="|#{hotel.phone}: ${hotelDetails.phoneNumber}|">Phone</h4>
+    <h4 th:text="|#{hotel.country}: ${hotelDetails.country}|">Country</h4>
+    <h4 th:text="|#{hotel.city}: ${hotelDetails.locality}|">Phone</h4>
+    <h4 th:text="|#{hotel.area}: ${hotelDetails.area}|">Area</h4>
+    <h4 th:text="|#{hotel.street}: ${hotelDetails.street}|">Street</h4>
+    <h4 th:text="|#{hotel.star}: ${hotelDetails.star}|">Star</h4>
+    <h4 th:text="|#{hotel.floors}: ${hotelDetails.floorCount}|">Floors</h4>
+
+    <div th:if="${hotelContent}">
+        <h4 th:text="#{hotel.content}">Hotel content:</h4>
+        <div th:each="content : ${hotelContent}">
+            <img th:src="@{/hotels/{hotelId}/content/{contentId}(hotelId=${hotel.id}, contentId=${content.id})}"
+                 alt="Hotel content">
+        </div>
+    </div>
+
+    <a th:href="@{/hotels/{hotelId}/update(hotelId=${hotel.id})}">
+        <button type="button" th:text="#{button.update}">Update hotel</button>
+    </a>
+</form>
+<form th:action="@{/hotels/{hotelId}/delete(hotelId=${hotel.id})}" method="post">
+    <button type="submit" th:text="#{button.delete}">Remove</button>
+</form>
+</body>
+</html>

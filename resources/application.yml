@@ -1,0 +1,46 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/hotel_repository
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+    hibernate:
+      naming:
+        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+
+  messages:
+    basename: messages
+    fallback-to-system-locale: false
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: 1084978167683-2dhm70nl37gn3cb5evgejej69g6eg3ki.apps.googleusercontent.com
+            clientSecret: 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
+            redirectUri: http://localhost:8080/login/oauth2/code/google
+            scope: openid,email,profile
+  mvc:
+    format:
+      date: iso
+      date-time: iso-offset
+
+springdoc:
+  swagger-ui:
+    oauth:
+      client-id: 1084978167683-2dhm70nl37gn3cb5evgejej69g6eg3ki.apps.googleusercontent.com
+      client-secret: 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
+      scopes: openid,email,profile
+    oauth2-redirect-url: http://localhost:8080/swagger-ui/oauth2-redirect.html
+
+app:
+  image:
+    bucket: C:\Users\LENOVO\IdeaProjects\Level_2\dmdev-project-level-2\images

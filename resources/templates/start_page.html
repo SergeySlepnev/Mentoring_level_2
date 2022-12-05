@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Start page</title>
+</head>
+<body>
+<div th:insert="~{fragment/header}"></div>
+<form action="/my-booking">
+    <a href="/hotels">
+        <button type="button" th:text="#{welcome.all_hotels}"></button>
+    </a>
+    <h1 th:text="#{welcome.top_five}">Top five hotels on MyBooking</h1>
+    <div th:each="hotel : ${topFiveHotels}">
+        <h3>
+            <a th:href="@{/hotels/{hotelId}(hotelId=${hotel.id})}"
+               th:text="|${hotel.name} - ${hotel.star()} -  ${hotel.avgRating()}|">Hotel info</a>
+            <div th:if="${hotel.link}">
+                <img th:src="@{/my-booking/{hotelId}/content(hotelId=${hotel.id})}" alt="Hotel content">
+            </div>
+        </h3>
+    </div>
+</form>
+</body>
+</html>
