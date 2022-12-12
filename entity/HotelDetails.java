@@ -7,8 +7,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -22,9 +23,10 @@ import javax.persistence.OneToOne;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = {"owner", "name", "locality"})
-@ToString(exclude = "hotel")
+@ToString(exclude = {"id", "hotel"})
 @Builder
 @Entity
+@Cache(usage= CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "HotelDetails")
 public class HotelDetails implements BaseEntity<Integer> {
 
     @Id
@@ -34,28 +36,21 @@ public class HotelDetails implements BaseEntity<Integer> {
     @OneToOne(fetch = FetchType.LAZY)
     private Hotel hotel;
 
-    @Column(nullable = false, unique = true)
     private String phoneNumber;
 
-    @Column(nullable = false)
     private String country;
 
-    @Column(nullable = false)
     private String locality;
 
-    @Column(nullable = false)
     private String area;
 
-    @Column(nullable = false)
     private String street;
 
-    @Column(nullable = false)
     private Integer floorCount;
 
     @Enumerated(EnumType.STRING)
     private Star star;
 
-    @Column(nullable = false)
     private String description;
 
     public void setHotel(Hotel hotel) {

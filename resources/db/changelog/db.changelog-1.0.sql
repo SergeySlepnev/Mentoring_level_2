@@ -1,4 +1,4 @@
---liquibase formatted sql
+--liquibase formatted sql;
 
 --changeset sslepnev:1
 CREATE TABLE IF NOT EXISTS users

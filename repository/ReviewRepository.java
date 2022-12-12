@@ -1,39 +1,12 @@
 package com.spdev.repository;
 
-import com.querydsl.jpa.impl.JPAQuery;
-import com.spdev.entity.Hotel;
 import com.spdev.entity.Review;
-import org.hibernate.graph.GraphSemantic;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
-import javax.persistence.EntityManager;
-import java.util.List;
+public interface ReviewRepository extends
+        JpaRepository<Review, Long>,
+        FilterReviewRepository,
+        QuerydslPredicateExecutor<Review> {
 
-import static com.spdev.entity.QReview.review;
-
-@Repository
-public class ReviewRepository extends RepositoryBase<Long, Review> {
-
-    public ReviewRepository(EntityManager entityManager) {
-        super(Review.class, entityManager);
-    }
-
-    public List<Review> findAllForHotelOrderedDescByRating(Hotel hotel) {
-        return new JPAQuery<Review>(getEntityManager())
-                .select(review)
-                .from(review)
-                .where(review.hotel.name.eq(hotel.getName()))
-                .orderBy(review.rating.desc())
-                .fetch();
-    }
-
-    public List<Review> findAllForHotelOrderedDescByRatingWithContent(Hotel hotel) {
-        return new JPAQuery<Review>(getEntityManager())
-                .select(review)
-                .from(review)
-                .where(review.hotel.hotelContents.isNotEmpty().and(review.hotel.name.eq(hotel.getName())))
-                .orderBy(review.rating.desc())
-                .setHint(GraphSemantic.FETCH.getJpaHintName(), getEntityManager().getEntityGraph("withReviewContent"))
-                .fetch();
-    }
 }

@@ -7,9 +7,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -26,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @NamedEntityGraph(
-        name = "withRoomContent",
+        name = "Room.roomContents",
         attributeNodes = {
                 @NamedAttributeNode("roomContents")
         })
@@ -34,9 +35,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = {"roomNo", "type", "square", "bedCount", "floor"})
-@ToString(exclude = {"hotel", "requests", "roomContents"})
+@ToString(exclude = {"id", "hotel", "requests", "roomContents"})
 @Builder
 @Entity
+@Cache(usage=CacheConcurrencyStrategy.READ_WRITE, region = "Rooms")
 public class Room implements BaseEntity<Integer> {
 
     @Id
@@ -46,7 +48,6 @@ public class Room implements BaseEntity<Integer> {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Hotel hotel;
 
-    @Column(nullable = false)
     private Integer roomNo;
 
     @Enumerated(EnumType.STRING)
@@ -60,7 +61,6 @@ public class Room implements BaseEntity<Integer> {
 
     private BigDecimal cost;
 
-    @Column(nullable = false)
     private boolean available;
 
     private Integer floor;
@@ -72,6 +72,7 @@ public class Room implements BaseEntity<Integer> {
     private List<BookingRequest> requests = new ArrayList<>();
 
     @Builder.Default
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<RoomContent> roomContents = new ArrayList<>();
 

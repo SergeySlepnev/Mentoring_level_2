@@ -1,35 +1,22 @@
 package com.spdev.repository;
 
-import com.querydsl.jpa.impl.JPAQuery;
 import com.spdev.entity.User;
-import com.spdev.entity.enums.Role;
-import org.springframework.stereotype.Repository;
+import com.spdev.entity.enums.Status;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
-import javax.persistence.EntityManager;
-import java.util.List;
+import java.util.Optional;
 
-import static com.spdev.entity.QUser.user;
+public interface UserRepository extends
+        JpaRepository<User, Integer>,
+        FilterUserRepository,
+        QuerydslPredicateExecutor<User> {
 
-@Repository
-public class UserRepository extends RepositoryBase<Integer, User> {
+    Optional<User> findByUsername(String username);
 
-    public UserRepository(EntityManager entityManager) {
-        super(User.class, entityManager);
-    }
-
-    public List<User> findAllOwners() {
-        return new JPAQuery<User>(getEntityManager())
-                .select(user)
-                .from(user)
-                .where(user.role.eq(Role.OWNER))
-                .fetch();
-    }
-
-    public List<User> findAllWithUserRole() {
-        return new JPAQuery<User>(getEntityManager())
-                .select(user)
-                .from(user)
-                .where(user.role.eq(Role.USER))
-                .fetch();
-    }
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query("update User u set u.status = :status where u.id = :id")
+    void changeStatusByUserId(Status status, Integer id);
 }

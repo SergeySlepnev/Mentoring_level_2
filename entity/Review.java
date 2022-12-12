@@ -7,9 +7,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @NamedEntityGraph(
-        name = "withReviewContent",
+        name = "Review.reviewContents",
         attributeNodes = {
                 @NamedAttributeNode("reviewContents")
         })
@@ -32,7 +33,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = {"hotel", "user", "date"})
-@ToString(exclude = "reviewContents")
+@ToString(exclude = {"id", "reviewContents"})
 @Builder
 @Entity
 public class Review implements BaseEntity<Long> {
@@ -49,12 +50,12 @@ public class Review implements BaseEntity<Long> {
 
     private Instant createdAt;
 
-    @Column(nullable = false)
     private Rating rating;
 
     private String description;
 
     @Builder.Default
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL)
     private List<ReviewContent> reviewContents = new ArrayList<>();
 

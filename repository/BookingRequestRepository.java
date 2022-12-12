@@ -1,28 +1,12 @@
 package com.spdev.repository;
 
-import com.querydsl.jpa.impl.JPAQuery;
 import com.spdev.entity.BookingRequest;
-import com.spdev.entity.enums.Status;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
-import javax.persistence.EntityManager;
-import java.util.List;
+public interface BookingRequestRepository extends
+        JpaRepository<BookingRequest, Long>,
+        FilterBookingRequestRepository,
+        QuerydslPredicateExecutor<BookingRequest> {
 
-import static com.spdev.entity.QBookingRequest.bookingRequest;
-
-@Repository
-public class BookingRequestRepository extends RepositoryBase<Long, BookingRequest> {
-
-    public BookingRequestRepository(EntityManager entityManager) {
-        super(BookingRequest.class, entityManager);
-    }
-
-    public List<BookingRequest> findAllByStatusOrderedDescByCreatedAt(Status status) {
-        return new JPAQuery<BookingRequest>(getEntityManager())
-                .select(bookingRequest)
-                .from(bookingRequest)
-                .where(bookingRequest.status.eq(status))
-                .orderBy(bookingRequest.createdAt.desc())
-                .fetch();
-    }
 }
